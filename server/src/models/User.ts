@@ -8,6 +8,7 @@ export interface IUser extends Document {
   avatar: string;
   growthScore: number;
   streak: number;
+  lastActivityDate: Date;
   displayName: string;
 
   createdAt: Date;
@@ -55,6 +56,9 @@ const userSchema = new mongoose.Schema<IUser>(
     streak: {
       type: Number,
       default: 0,
+    },
+    lastActivityDate: {
+      type: Date,
     },
   },
   {

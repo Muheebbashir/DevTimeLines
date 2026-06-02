@@ -2,19 +2,10 @@ import { Request, Response } from "express";
 import Timeline from "../models/Timeline";
 import User from "../models/User";
 
-export const createTimeline = async (
-  req: Request,
-  res: Response,
-) => {
+export const createTimeline = async (req: Request, res: Response) => {
   try {
-    const {
-      clerkId,
-      title,
-      description,
-      category,
-      impactScore,
-      imageUrl,
-    } = req.body;
+    const { clerkId, title, description, category, impactScore, imageUrl } =
+      req.body;
 
     // Check required fields
     if (
@@ -22,7 +13,7 @@ export const createTimeline = async (
       !title ||
       !description ||
       !category ||
-      !impactScore
+      impactScore === undefined
     ) {
       return res.status(400).json({
         success: false,
@@ -50,6 +41,46 @@ export const createTimeline = async (
       imageUrl: imageUrl || "",
     });
 
+    // Growth score
+    user.growthScore += Number(impactScore);
+
+    // Streak calculation
+    const today = new Date();
+
+    if (!user.lastActivityDate) {
+      user.streak = 1;
+    } else {
+      const lastDate = new Date(user.lastActivityDate);
+
+      const lastDay = new Date(
+        lastDate.getFullYear(),
+        lastDate.getMonth(),
+        lastDate.getDate(),
+      );
+
+      const currentDay = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+      );
+
+      const diffTime = currentDay.getTime() - lastDay.getTime();
+
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        user.streak += 1;
+      } else if (diffDays > 1) {
+        user.streak = 1;
+      }
+      // diffDays === 0
+      // same day → keep streak unchanged
+    }
+
+    user.lastActivityDate = today;
+
+    await user.save();
+
     return res.status(201).json({
       success: true,
       timeline,
@@ -64,10 +95,7 @@ export const createTimeline = async (
   }
 };
 
-export const getUserTimelines = async (
-  req: Request,
-  res: Response,
-) => {
+export const getUserTimelines = async (req: Request, res: Response) => {
   try {
     const { clerkId } = req.params;
 
