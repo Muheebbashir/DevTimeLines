@@ -125,3 +125,115 @@ export const getUserTimelines = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteTimeline = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params;
+
+    const timeline = await Timeline.findById(id);
+
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: "Timeline not found",
+      });
+    }
+
+    const user = await User.findById(timeline.userId);
+
+    if (user) {
+      user.growthScore -= timeline.impactScore;
+
+      if (user.growthScore < 0) {
+        user.growthScore = 0;
+      }
+
+      await user.save();
+    }
+
+    await Timeline.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Timeline deleted",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+export const updateTimeline = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params;
+
+    const {
+      title,
+      description,
+      category,
+      impactScore,
+      imageUrl,
+    } = req.body;
+
+    const timeline = await Timeline.findById(id);
+
+    if (!timeline) {
+      return res.status(404).json({
+        success: false,
+        message: "Timeline not found",
+      });
+    }
+
+    const oldImpact = timeline.impactScore;
+
+    timeline.title = title;
+    timeline.description = description;
+    timeline.category = category;
+    timeline.impactScore = impactScore;
+
+    if (imageUrl !== undefined) {
+      timeline.imageUrl = imageUrl;
+    }
+
+    await timeline.save();
+
+    const difference =
+      Number(impactScore) - Number(oldImpact);
+
+    const user = await User.findById(
+      timeline.userId
+    );
+
+    if (user) {
+      user.growthScore += difference;
+
+      if (user.growthScore < 0) {
+        user.growthScore = 0;
+      }
+
+      await user.save();
+    }
+
+    return res.status(200).json({
+      success: true,
+      timeline,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
