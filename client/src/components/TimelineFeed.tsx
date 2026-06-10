@@ -7,25 +7,27 @@ import EditTimelineModal from "./EditTimelineModal";
 
 const CATEGORY_COLORS: Record<string, string> = {
   Development: "#2563eb",
-  Fitness:     "#16a34a",
-  Education:   "#d97706",
-  Career:      "#7c3aed",
-  Personal:    "#db2777",
-  Other:       "#475569",
+  Fitness: "#16a34a",
+  Education: "#d97706",
+  Career: "#7c3aed",
+  Personal: "#db2777",
+  Other: "#475569",
 };
 
 const CATEGORY_BG: Record<string, string> = {
   Development: "#eff6ff",
-  Fitness:     "#f0fdf4",
-  Education:   "#fffbeb",
-  Career:      "#f5f3ff",
-  Personal:    "#fdf2f8",
-  Other:       "#f8fafc",
+  Fitness: "#f0fdf4",
+  Education: "#fffbeb",
+  Career: "#f5f3ff",
+  Personal: "#fdf2f8",
+  Other: "#f8fafc",
 };
 
 function ScoreBars({ score, color }: { score: number; color: string }) {
   return (
-    <div style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 18 }}>
+    <div
+      style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 18 }}
+    >
       {Array.from({ length: 10 }, (_, i) => {
         const n = i + 1;
         const h = 6 + (n / 10) * 12;
@@ -33,14 +35,25 @@ function ScoreBars({ score, color }: { score: number; color: string }) {
           <div
             key={n}
             style={{
-              width: 12, height: h, borderRadius: 2,
+              width: 12,
+              height: h,
+              borderRadius: 2,
               background: n <= score ? color : "#e2e8f0",
               transition: "background 0.2s",
             }}
           />
         );
       })}
-      <span style={{ marginLeft: 6, fontSize: 11.5, fontWeight: 600, color: "#94a3b8", lineHeight: 1, alignSelf: "center" }}>
+      <span
+        style={{
+          marginLeft: 6,
+          fontSize: 11.5,
+          fontWeight: 600,
+          color: "#94a3b8",
+          lineHeight: 1,
+          alignSelf: "center",
+        }}
+      >
         {score}/10
       </span>
     </div>
@@ -49,28 +62,76 @@ function ScoreBars({ score, color }: { score: number; color: string }) {
 
 function SkeletonCard() {
   return (
-    <div style={{
-      background: "#fff", border: "1px solid #e2e8f0", borderRadius: 12,
-      padding: "1.25rem 1.5rem", display: "flex", gap: "1rem",
-      overflow: "hidden", position: "relative",
-    }}>
-      <div style={{ width: 36, height: 36, borderRadius: 8, background: "#f1f5f9", flexShrink: 0 }} />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-        <div style={{ height: 14, borderRadius: 4, background: "#f1f5f9", width: "55%" }} />
-        <div style={{ height: 12, borderRadius: 4, background: "#f8fafc", width: "80%" }} />
-        <div style={{ height: 12, borderRadius: 4, background: "#f8fafc", width: "65%" }} />
+    <div
+      style={{
+        background: "#fff",
+        border: "1px solid #e2e8f0",
+        borderRadius: 12,
+        padding: "1.25rem 1.5rem",
+        display: "flex",
+        gap: "1rem",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 8,
+          background: "#f1f5f9",
+          flexShrink: 0,
+        }}
+      />
+      <div
+        style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}
+      >
+        <div
+          style={{
+            height: 14,
+            borderRadius: 4,
+            background: "#f1f5f9",
+            width: "55%",
+          }}
+        />
+        <div
+          style={{
+            height: 12,
+            borderRadius: 4,
+            background: "#f8fafc",
+            width: "80%",
+          }}
+        />
+        <div
+          style={{
+            height: 12,
+            borderRadius: 4,
+            background: "#f8fafc",
+            width: "65%",
+          }}
+        />
       </div>
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 50%, transparent 100%)",
-        animation: "tf-shimmer 1.4s infinite",
-      }} />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 50%, transparent 100%)",
+          animation: "tf-shimmer 1.4s infinite",
+        }}
+      />
     </div>
   );
 }
 
-export default function TimelineFeed() {
-  const { data: timelines = [], isLoading } = useTimelines();
+interface Props {
+  timelines?: Timeline[];
+}
+
+export default function TimelineFeed({ timelines: filteredTimelines }: Props) {
+  const { data: allTimelines = [], isLoading } = useTimelines();
+
+  const timelines = filteredTimelines ?? allTimelines;
   const { mutate: deleteTimeline, isPending: isDeleting } = useDeleteTimeline();
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [editingTimeline, setEditingTimeline] = useState<Timeline | null>(null);
@@ -82,7 +143,7 @@ export default function TimelineFeed() {
     } else {
       setConfirmId(id);
       // auto-reset confirm state after 3s if user doesn't click again
-      setTimeout(() => setConfirmId(c => c === id ? null : c), 3000);
+      setTimeout(() => setConfirmId((c) => (c === id ? null : c)), 3000);
     }
   };
 
@@ -219,91 +280,142 @@ export default function TimelineFeed() {
 
       <div className="tf-root">
         <div className="tf-container">
-
           <div className="tf-page-header">
             <div className="tf-eyebrow">
               <span>Timeline</span>
               <div className="tf-eyebrow-line" />
             </div>
             <h1 className="tf-page-title">Your progress feed</h1>
-            <p className="tf-page-sub">Every milestone you've logged, in order.</p>
+            <p className="tf-page-sub">
+              Every milestone you've logged, in order.
+            </p>
           </div>
 
-          {!isLoading && timelines.length > 0 && (() => {
-            const avg = (timelines.reduce((s, t) => s + t.impactScore, 0) / timelines.length).toFixed(1);
-            const cats = new Set(timelines.map(t => t.category)).size;
-            return (
-              <div className="tf-stats">
-                <div className="tf-stat">
-                  <span className="tf-stat-val">{timelines.length}</span>
-                  <span className="tf-stat-label">Entries</span>
+          {!isLoading &&
+            timelines.length > 0 &&
+            (() => {
+              const avg = (
+                timelines.reduce((s, t) => s + t.impactScore, 0) /
+                timelines.length
+              ).toFixed(1);
+              const cats = new Set(timelines.map((t) => t.category)).size;
+              return (
+                <div className="tf-stats">
+                  <div className="tf-stat">
+                    <span className="tf-stat-val">{timelines.length}</span>
+                    <span className="tf-stat-label">Entries</span>
+                  </div>
+                  <div className="tf-stat">
+                    <span className="tf-stat-val">{avg}</span>
+                    <span className="tf-stat-label">Avg. Impact</span>
+                  </div>
+                  <div className="tf-stat">
+                    <span className="tf-stat-val">{cats}</span>
+                    <span className="tf-stat-label">Categories</span>
+                  </div>
                 </div>
-                <div className="tf-stat">
-                  <span className="tf-stat-val">{avg}</span>
-                  <span className="tf-stat-label">Avg. Impact</span>
-                </div>
-                <div className="tf-stat">
-                  <span className="tf-stat-val">{cats}</span>
-                  <span className="tf-stat-label">Categories</span>
-                </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
 
           {isLoading && (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-              {[1, 2, 3].map(i => <SkeletonCard key={i} />)}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.875rem",
+              }}
+            >
+              {[1, 2, 3].map((i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           )}
 
           {!isLoading && timelines.length === 0 && (
             <div className="tf-empty">
               <div className="tf-empty-circle">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
               </div>
               <div className="tf-empty-title">No entries yet</div>
-              <p className="tf-empty-sub">Start logging milestones to build your timeline.</p>
+              <p className="tf-empty-sub">
+                Start logging milestones to build your timeline.
+              </p>
             </div>
           )}
 
           {!isLoading && timelines.length > 0 && (
             <div className="tf-feed">
               {timelines.map((tl, idx) => {
-                const color = CATEGORY_COLORS[tl.category] ?? CATEGORY_COLORS["Other"];
-                const bg    = CATEGORY_BG[tl.category]    ?? CATEGORY_BG["Other"];
+                const color =
+                  CATEGORY_COLORS[tl.category] ?? CATEGORY_COLORS["Other"];
+                const bg = CATEGORY_BG[tl.category] ?? CATEGORY_BG["Other"];
                 const relativeTime = tl.createdAt
-                  ? formatDistanceToNow(new Date(tl.createdAt), { addSuffix: true })
+                  ? formatDistanceToNow(new Date(tl.createdAt), {
+                      addSuffix: true,
+                    })
                   : null;
                 return (
-                  <div key={tl._id} className="tf-row" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <div
+                    key={tl._id}
+                    className="tf-row"
+                    style={{ animationDelay: `${idx * 0.05}s` }}
+                  >
                     <div className="tf-track">
-                      <div className="tf-track-dot" style={{ borderColor: color, background: color }} />
+                      <div
+                        className="tf-track-dot"
+                        style={{ borderColor: color, background: color }}
+                      />
                       <div className="tf-track-line" />
                     </div>
 
                     <div className="tf-card-wrap">
                       <div className="tf-card">
                         {tl.imageUrl && (
-                          <img className="tf-card-image" src={tl.imageUrl} alt={tl.title} />
+                          <img
+                            className="tf-card-image"
+                            src={tl.imageUrl}
+                            alt={tl.title}
+                          />
                         )}
                         <div className="tf-card-body">
                           <div className="tf-card-top">
                             <h3 className="tf-card-title">{tl.title}</h3>
-                            <span className="tf-cat-tag" style={{ background: bg, color }}>
+                            <span
+                              className="tf-cat-tag"
+                              style={{ background: bg, color }}
+                            >
                               {tl.category}
                             </span>
                           </div>
 
                           {relativeTime && (
                             <div className="tf-time">
-                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
+                              <svg
+                                width="11"
+                                height="11"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
                               </svg>
                               {relativeTime}
                             </div>
@@ -313,25 +425,86 @@ export default function TimelineFeed() {
 
                           <div className="tf-card-footer">
                             <div className="tf-impact-group">
-                              <span style={{ fontSize: 11, fontWeight: 600, color: "#475569" }}>Impact Score</span>
-                              <ScoreBars score={tl.impactScore} color={CATEGORY_COLORS[tl.category]} />
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  color: "#475569",
+                                }}
+                              >
+                                Impact Score
+                              </span>
+                              <ScoreBars
+                                score={tl.impactScore}
+                                color={CATEGORY_COLORS[tl.category]}
+                              />
                             </div>
                             <div className="tf-actions">
-                              <button className="tf-action-btn" onClick={() => setEditingTimeline(tl)}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                              <button
+                                className="tf-action-btn"
+                                onClick={() => setEditingTimeline(tl)}
+                              >
+                                <svg
+                                  width="14"
+                                  height="14"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M12 20h9" />
+                                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                </svg>
                               </button>
                               <button
-                                className={`tf-action-btn delete ${confirmId === tl._id ? 'confirm' : ''}`}
+                                className={`tf-action-btn delete ${confirmId === tl._id ? "confirm" : ""}`}
                                 onClick={() => handleDelete(tl._id)}
                                 disabled={isDeleting && confirmId === tl._id}
                               >
                                 {confirmId === tl._id ? (
                                   <>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    <svg
+                                      width="14"
+                                      height="14"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
                                   </>
                                 ) : (
                                   <>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    <svg
+                                      width="14"
+                                      height="14"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <polyline points="3 6 5 6 21 6"></polyline>
+                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                      <line
+                                        x1="10"
+                                        y1="11"
+                                        x2="10"
+                                        y2="17"
+                                      ></line>
+                                      <line
+                                        x1="14"
+                                        y1="11"
+                                        x2="14"
+                                        y2="17"
+                                      ></line>
+                                    </svg>
                                   </>
                                 )}
                               </button>
@@ -345,7 +518,6 @@ export default function TimelineFeed() {
               })}
             </div>
           )}
-
         </div>
       </div>
 
