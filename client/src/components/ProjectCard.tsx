@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { Project } from "../types/project";
 
 interface Props {
@@ -17,6 +18,7 @@ export default function ProjectCard({
   onEdit,
   onDelete,
 }: Props) {
+  const navigate = useNavigate();
   const color = STATUS_COLORS[project.status];
 
   return (
@@ -26,6 +28,7 @@ export default function ProjectCard({
         border: "1px solid #e2e8f0",
         borderRadius: 18,
         padding: 22,
+        transition: "0.15s",
       }}
     >
       <div
@@ -68,7 +71,7 @@ export default function ProjectCard({
           marginBottom: 18,
         }}
       >
-        {project.description}
+        {project.description || "No description added."}
       </p>
 
       <div
@@ -105,14 +108,29 @@ export default function ProjectCard({
 
       <div
         style={{
-          display: "flex",
-          gap: 10,
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr 1fr",
+          gap: 8,
         }}
       >
         <button
+          onClick={() => navigate(`/projects/${project._id}`)}
+          style={{
+            padding: "9px 12px",
+            borderRadius: 10,
+            border: "none",
+            background: "#0f172a",
+            cursor: "pointer",
+            fontWeight: 600,
+            color: "#fff",
+          }}
+        >
+          View
+        </button>
+
+        <button
           onClick={() => onEdit(project)}
           style={{
-            flex: 1,
             padding: "9px 12px",
             borderRadius: 10,
             border: "1px solid #e2e8f0",
@@ -128,7 +146,6 @@ export default function ProjectCard({
         <button
           onClick={() => onDelete(project._id)}
           style={{
-            flex: 1,
             padding: "9px 12px",
             borderRadius: 10,
             border: "1px solid #fecaca",

@@ -10,6 +10,7 @@ import SignInPage from "../pages/SignInPage";
 import SignUpPage from "../pages/SignUpPage";
 import { Navigate } from "react-router-dom";
 import PublicLandingRoute from "./PublicLandingRoute";
+import ProjectDetailsPage from "../pages/ProjectDetailsPage";
 
 export default function AppRoutes() {
   return (
@@ -73,6 +74,14 @@ export default function AppRoutes() {
         element={
           <ProtectedRoute>
             <ProjectsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:projectId"
+        element={
+          <ProtectedRoute>
+            <ProjectDetailsPage />
           </ProtectedRoute>
         }
       />

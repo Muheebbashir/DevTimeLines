@@ -4,7 +4,7 @@ import User from "../models/User";
 
 export const createTimeline = async (req: Request, res: Response) => {
   try {
-    const { clerkId, title, description, category, impactScore, imageUrl } =
+    const { clerkId, title, description, category, impactScore, imageUrl,projectId } =
       req.body;
 
     // Check required fields
@@ -34,6 +34,7 @@ export const createTimeline = async (req: Request, res: Response) => {
     // Create timeline entry
     const timeline = await Timeline.create({
       userId: user._id,
+      projectId: projectId || null,
       title,
       description,
       category,

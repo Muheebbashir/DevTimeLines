@@ -2,6 +2,8 @@ import mongoose, { Document, Model } from "mongoose";
 
 export interface ITimeline extends Document {
   userId: mongoose.Types.ObjectId;
+  projectId?: mongoose.Types.ObjectId;
+
   title: string;
   description: string;
   imageUrl: string;
@@ -18,6 +20,12 @@ const timelineSchema = new mongoose.Schema<ITimeline>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+
+    projectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      default: null,
     },
 
     title: {

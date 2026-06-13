@@ -1,6 +1,7 @@
 export interface Timeline {
   _id: string;
   userId: string;
+  projectId?: string | null;
 
   title: string;
   description: string;
